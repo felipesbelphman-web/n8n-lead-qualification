@@ -59,4 +59,20 @@ The exported configuration was reviewed and the sanitized JSON was structurally 
 
 ## Security
 
-Credential references, instance metadata, and the original project reference were removed from the public template. Configure credentials inside n8n; never commit API keys or database passwords. Do not disable RLS or grant anonymous access for this workflow. Use fictional data in public screenshots.
+Credential references, instance metadata, and the original project reference were removed from the public template. Configure credentials inside n8n; never commit
+
+API keys or database passwords. Do not disable RLS or grant anonymous access for this workflow. Use fictional data in public screenshots.
+
+## Screenshots
+
+### Lead qualification workflow
+
+Captures quote requests, assigns High or Normal priority, and saves contacts to Supabase.
+
+![Lead qualification workflow](workflow.png)
+
+### Database results
+
+Three fictional sample contacts showing both priority levels.
+
+![Database results](database-results.png)
