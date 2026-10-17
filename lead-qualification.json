@@ -1,0 +1,246 @@
+{
+  "name": "Lead Qualification — n8n & Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Request a quote",
+        "formDescription": "Tell us which service you need.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "service",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        96
+      ],
+      "id": "9ab410ae-35ac-42ea-a7f8-4719e0a62225",
+      "name": "Receive contact form",
+      "webhookId": "e15472ac-ba22-4ba2-b0ee-335ee886ed0f"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c6c075f5-f7d3-417b-9b29-a0569a00634a",
+              "name": "message",
+              "value": "=Hi, {{ $json.name }}! We've received your quote request for {{ $json.service }}.",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        96
+      ],
+      "id": "455e2b3f-0e81-4738-a6e9-31733d16fbe4",
+      "name": "Build confirmation message"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "projectRef": "YOUR_SUPABASE_PROJECT_REF",
+        "tableId": "contacts",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $json.name }}"
+            },
+            {
+              "fieldId": "service",
+              "fieldValue": "={{ $json.service }}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $json.message }}"
+            },
+            {
+              "fieldId": "priority",
+              "fieldValue": "={{ $json.priority }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        896,
+        96
+      ],
+      "id": "4e44bb27-c37c-4a6f-8f4c-92084c6a51df",
+      "name": "Save contact to Supabase"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "75c17fe1-2197-4d95-9f05-994a1ef6fe11",
+              "leftValue": "={{ $json.service }}",
+              "rightValue": "Online store",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        96
+      ],
+      "id": "7a1ad526-6055-48b2-82af-5e9b686a6804",
+      "name": "Is online store?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "342b3d5d-8c3b-46e5-bc62-6ce3fd1025c9",
+              "name": "priority",
+              "value": "High",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        672,
+        0
+      ],
+      "id": "0c703e33-d21a-4c60-9355-64750d1736a0",
+      "name": "Set high priority"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dce148ab-80ee-4ffe-8690-35ba875be685",
+              "name": "priority",
+              "value": "Normal",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        672,
+        192
+      ],
+      "id": "2ef8c352-24e6-4d7f-9798-bb6956ad0818",
+      "name": "Set normal priority"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive contact form": {
+      "main": [
+        [
+          {
+            "node": "Build confirmation message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build confirmation message": {
+      "main": [
+        [
+          {
+            "node": "Is online store?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is online store?": {
+      "main": [
+        [
+          {
+            "node": "Set high priority",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set normal priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set high priority": {
+      "main": [
+        [
+          {
+            "node": "Save contact to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set normal priority": {
+      "main": [
+        [
+          {
+            "node": "Save contact to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
